@@ -1,0 +1,12 @@
+FROM python:3
+ENV PYTHONUNBUFFERED 1
+
+COPY library_back/ /back
+
+WORKDIR /back
+
+COPY library_back/requirements.txt /
+RUN pip install --no-cache-dir -r requirements.txt
+
+
+CMD ["./scripts/init.sh"]

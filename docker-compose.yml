@@ -3,17 +3,23 @@ services:
     postgres:
         container_name: postgres_db
         image: postgres:latest
+        ports:
+            - 5000:5432
         environment:
             - POSTGRES_PASSWORD=password
             - POSTGRES_DB=library_db
-        ports:
-            - 5000:5432
         networks: 
             - library_back
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+
     library_back:
         build:
-            context: library_back/
-            dockerfile: Dockerfile
+            context: .
+            dockerfile: Dockerfile-back
         container_name: library_back
         environment:
             - DJANGO_SETTINGS_MODULE=src.settings
@@ -25,11 +31,35 @@ services:
         ports:
             - 8000:8000
         depends_on:
-            - postgres
+            postgres:
+                condition: service_healthy
         volumes:
-            - ./library_back:/var/www
+            - back:/back/
         networks: 
+            - library_back
+
+    library_front:
+        build:
+            context: .
+            dockerfile: Dockerfile-front
+        container_name: library_front
+        stdin_open: true
+        environment:
+            - CHOKIDAR_USEPOLLING=true
+        ports:
+            - 3000:3000
+        volumes:
+            - gces-monitoria:/app/
+            - node_modules:/gces-monitoria/node_modules
+        networks: 
+            - library_back
+        depends_on:
+            - postgres
             - library_back
 
 networks:
     library_back:
+volumes: 
+    node_modules:
+    gces-monitoria:
+    back:
