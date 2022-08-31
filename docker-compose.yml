@@ -18,8 +18,8 @@ services:
 
     library_back:
         build:
-            context: .
-            dockerfile: Dockerfile-back
+            context: library_back/
+            dockerfile: Dockerfile.back
         container_name: library_back
         environment:
             - DJANGO_SETTINGS_MODULE=src.settings
@@ -40,14 +40,12 @@ services:
 
     library_front:
         build:
-            context: .
-            dockerfile: Dockerfile-front
+            context: library_front/
+            dockerfile: Dockerfile.front
         container_name: library_front
         stdin_open: true
         environment:
             - CHOKIDAR_USEPOLLING=true
-        ports:
-            - 3000:3000
         volumes:
             - gces-monitoria:/app/
             - node_modules:/gces-monitoria/node_modules
@@ -55,6 +53,19 @@ services:
             - library_back
         depends_on:
             - postgres
+            - library_back
+
+    nginx:
+        build:
+            context: nginx/
+            dockerfile: Dockerfile.proxy
+        container_name: nginx
+        ports:
+            - 3050:80
+        depends_on:
+            - library_back
+            - library_front
+        networks:
             - library_back
 
 networks:
