@@ -1,0 +1,23 @@
+name: front-ci
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Up docker-compose
+      run: docker-compose up -d --build
+    - name: Build
+      run: docker exec library_front bash -c  "npm run build"
+    - name: Lint
+      run: docker exec library_front bash -c  "npx eslint"
+    - name: Tests
+      run: docker exec library_front bash -c  "CI=true npm test --watchAll=false"
