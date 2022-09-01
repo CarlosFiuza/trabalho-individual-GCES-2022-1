@@ -13,8 +13,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Create test environment
+    - name: Up docker-compose
       run: docker-compose up -d --build
+    - name: Build
+      run: docker exec library_front bash -c  "npm run build"
     - name: Lint
       run: docker exec library_front bash -c  "npx eslint"
     - name: Tests

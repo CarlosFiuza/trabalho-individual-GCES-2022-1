@@ -23,7 +23,7 @@ jobs:
           pip install flake8
       - name: Lint
         run: |
-          flake8 --extend-ignore=F401,W291,E302,W293,E713,E501,W391 .
+          flake8 --extend-ignore=F401,W291,E302,W293,E713,E501,W391,W292 .
       - name: Create test environment
         run: docker-compose up -d --build
       - name: Tests
