@@ -16,6 +16,6 @@ jobs:
     - name: Create test environment
       run: docker-compose up -d --build
     - name: Lint
-      run: docker-compose exec library_front bash -c  "npx eslint"
+      run: docker exec library_front bash -c  "npx eslint"
     - name: Tests
-      run: docker-compose exec library_front bash -c  "npm test --watchAll=false"
+      run: docker exec library_front bash -c  "npm test --watchAll=false"
