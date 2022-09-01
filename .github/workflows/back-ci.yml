@@ -1,0 +1,30 @@
+name: back-ci
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - name: Install dependencies for flake8
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+      - name: Lint
+        run: |
+          flake8 .
+      - name: Create test environment
+        run: docker-compose up -d --build
+      - name: Tests
+        run: docker exec library_back bash -c "python manage.py test"

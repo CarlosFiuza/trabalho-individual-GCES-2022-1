@@ -1,0 +1,21 @@
+name: front-ci
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Create test environment
+      run: docker-compose up -d --build
+    - name: Lint
+      run: docker-compose exec library_front bash -c  "npx eslint"
+    - name: Tests
+      run: docker-compose exec library_front bash -c  "npm test --watchAll=false"
